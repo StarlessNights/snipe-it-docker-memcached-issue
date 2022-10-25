@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  snipeit:
+    image: snipe/snipe-it:v6.0.12@sha256:2aa8cf5bb4716f2c36b80d983770da88a55e72a9d38842be489f1f54e8de2810
+    container_name: snipeit
+    ports:
+    - "8000:80"
+    volumes:
+    - ./logs:/var/www/html/storage/logs
+    depends_on:
+    - mariadb
+    - memcached
+    env_file:
+    - env.docker
+    networks:
+    - snipeit-backend
+
+  mariadb:
+    image: mariadb:10.6.4-focal
+    volumes:
+    - db:/var/lib/mysql
+    env_file:
+    - env.docker
+    networks:
+    - snipeit-backend
+
+  # Memecached instead of redis
+  memcached:
+    image: memcached:1.6.17@sha256:931b3d5a0c377a1ffba03d7692e157961e2802cd2fe528801182e80b099fcad8
+    networks:
+    - snipeit-backend
+
+
+volumes:
+  db: {}
+
+networks:
+  snipeit-backend: {}
